@@ -2,6 +2,8 @@
 
 Web interface for [nanobot](https://github.com/HKUDS/nanobot) - an ultra-lightweight personal AI assistant.
 
+![Screenshot](screenshot.png)
+
 ## What is this?
 
 nanobot-web is the web frontend for nanobot, providing a modern chat interface to interact with AI assistants. It works with the nanobot backend to provide:
