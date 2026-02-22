@@ -72,6 +72,7 @@ interface MCPServer {
 
 interface WebSettings {
   startup_remind_todos: boolean;
+  theme: 'light' | 'dark' | 'system';
 }
 
 interface NanobotSettings {
@@ -146,6 +147,7 @@ const DEFAULT_SETTINGS: NanobotSettings = {
   },
   web: {
     startup_remind_todos: false,
+    theme: 'system',
   },
 };
 
@@ -287,6 +289,7 @@ export function Settings() {
       },
       web: {
         startup_remind_todos: false,
+        theme: 'system',
       },
     };
   };
@@ -346,11 +349,31 @@ export function Settings() {
     }));
   };
 
-  const updateWeb = (field: keyof WebSettings, value: boolean) => {
+  const updateWeb = (field: keyof WebSettings, value: boolean | string) => {
     setSettings(prev => ({
       ...prev,
       web: { ...prev.web, [field]: value }
     }));
+    
+    // Apply theme change immediately
+    if (field === 'theme') {
+      const theme = value as string;
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        // system
+        localStorage.setItem('theme', 'system');
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
   };
 
   const addMcpServer = () => {
@@ -602,6 +625,23 @@ export function Settings() {
             启动设置
           </h2>
           <div className="space-y-3">
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg">
+              <div>
+                <span className="text-sm font-medium text-[#1A1A1A]">主题模式</span>
+                <p className="text-xs text-[#666666]">选择浅色/深色/跟随系统</p>
+              </div>
+              <select
+                value={settings.web.theme}
+                onChange={(e) => updateWeb('theme', e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-[#E5E5E5] bg-white dark:bg-[#333333] dark:border-[#444444] text-sm"
+              >
+                <option value="light">浅色</option>
+                <option value="dark">深色</option>
+                <option value="system">跟随系统</option>
+              </select>
+            </div>
+            {/* Startup Todo */}
             <div className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg">
               <div>
                 <span className="text-sm font-medium text-[#1A1A1A]">启动提醒待办</span>
