@@ -207,6 +207,12 @@ export function Settings() {
   };
 
   const handleSave = () => {
+    // 表单验证
+    if (!settings.provider.api_key.trim()) {
+      alert('请填写 API Key！');
+      return;
+    }
+    
     setSaveStatus('saving');
     try {
       // Save to localStorage
